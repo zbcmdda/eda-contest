@@ -1,24 +1,51 @@
 # Pango FPGA SRB Delay Estimator
 
 C++17 solution for the 2026 EDA Elite Challenge problem "Routing Delay Estimation for
-Ultra-Large-Scale FPGAs" from Pango.
+Ultra-Large-Scale FPGAs" from Pango. The repository includes the complete architecture parser,
+exact implicit-graph oracle, learned delay estimator, latest short-route implementation, training
+scripts, public validation data, and automated tests.
 
-The submitted path is a deterministic gradient-boosted estimator trained from the public
-one-million-query answer set. A separate exact implicit-graph router remains in the project as
-an oracle for architecture validation and golden regression tests.
+## Latest Results — `95.0229` Accuracy Candidate
 
-## Current Algorithm Status
+The current strongest qualified method is **`--short-route`**. It uses architecture-driven weighted
+A* for Manhattan distance `0--32`, then uses the production estimator for longer paths. On the
+locked final 100,000 rows of the public one-million-row answer set, it improves the overall official
+accuracy score from **94.2958** to **95.0229**.
 
-The repository contains two intentionally separate runtime policies:
+| Mode | Invocation | Overall score | `0--16` score | `17--32` score | Local runtime / 1M rows |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Conservative baseline | no extra flag | 94.2958 | 64.3008 | 76.2246 | about 9.84 s |
+| Learned residual candidate | `--short-residual` | 94.7564 | 71.4785 | 79.9225 | 14.83 s |
+| **Latest accuracy candidate** | **`--short-route`** | **95.0229** | **96.8621** | **97.0510** | **16.16 s** |
 
-- **Latest accuracy candidate:** `--short-route`. It uses the architecture-driven weighted local
-  router for Manhattan distance `0--32` and achieved `95.0229` on the locked public final block.
-- **Conservative baseline:** no extra flag. It keeps the original 128-tree estimator and scored
-  `94.2958` on the same block. It remains available as a control while the full 100-million-row
-  target-machine comparison is not yet complete.
+The `--short-route` result improves short-path accuracy by `+32.5613` points for distance `0--16`
+and `+20.8264` points for `17--32`. Five complete one-million-row runs produced byte-identical
+output (SHA-256 `63aace61548f432e166b60419f3f142fa2d6f451427d2bcc896b96b888cadbcf`), with peak RSS
+around 137 MiB. The measured 16.16 s/million-row rate extrapolates to about 1,616 s for 100 million
+rows, below the 1,800 s limit but still requiring validation on the organizer's target machine and
+hidden request distribution.
 
-Both modes are implemented in the tracked C++ source and covered by the CLI tests. The score above
-is a public qualification result, not a guarantee of the hidden evaluation score.
+These results are from the locked public final block, not a promise of hidden-evaluation performance.
+Full metrics, selection protocol, and determinism evidence are in [docs/RESULTS.md](docs/RESULTS.md).
+
+## Which Mode Should I Run?
+
+Use the latest method when evaluating the best current accuracy result:
+
+```bash
+build/estimate -in request.csv -out result.csv --short-route
+```
+
+Use the no-flag command only when you explicitly want the faster conservative baseline:
+
+```bash
+build/estimate -in request.csv -out result.csv
+```
+
+The no-flag baseline is intentionally retained as a control until a full 100-million-row,
+same-machine comparison selects the final competition submission policy. The latest `--short-route`
+implementation is tracked in source and covered by the CLI tests; it is not an untracked local
+experiment.
 
 ## Build
 

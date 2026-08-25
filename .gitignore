@@ -1,0 +1,37 @@
+# CMake/Ninja build trees and generated build metadata
+/build/
+/build-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+.ninja_deps
+.ninja_log
+
+# Local Python environments and toolchains
+/.venv-experiments/
+/.venv/
+/venv/
+/.local-toolchain/
+__pycache__/
+*.py[cod]
+
+# Generated experiment data. Keep the small human-readable reports below.
+/refine-logs/*
+!/refine-logs/EXPERIMENT_PLAN.md
+!/refine-logs/EXPERIMENT_RESULTS.md
+!/refine-logs/EXPERIMENT_TRACKER.md
+
+# Historical candidate models are reproducible outputs; the selected model is tracked.
+/models/candidates/
+
+# Temporary files and local logs
+*.csv.tmp
+*.tmp
+*.bak
+*.log
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+*.swp

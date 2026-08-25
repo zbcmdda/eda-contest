@@ -1,0 +1,6 @@
+# Optional dependencies for offline model training and experiment scripts.
+# The C++ estimator itself has no Python dependency.
+lightgbm==4.6.0
+numpy==2.5.2
+pandas==3.0.5
+scipy==1.18.1

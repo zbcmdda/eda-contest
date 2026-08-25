@@ -7,6 +7,19 @@ The submitted path is a deterministic gradient-boosted estimator trained from th
 one-million-query answer set. A separate exact implicit-graph router remains in the project as
 an oracle for architecture validation and golden regression tests.
 
+## Current Algorithm Status
+
+The repository contains two intentionally separate runtime policies:
+
+- **Latest accuracy candidate:** `--short-route`. It uses the architecture-driven weighted local
+  router for Manhattan distance `0--32` and achieved `95.0229` on the locked public final block.
+- **Conservative baseline:** no extra flag. It keeps the original 128-tree estimator and scored
+  `94.2958` on the same block. It remains available as a control while the full 100-million-row
+  target-machine comparison is not yet complete.
+
+Both modes are implemented in the tracked C++ source and covered by the CLI tests. The score above
+is a public qualification result, not a guarantee of the hidden evaluation score.
+
 ## Build
 
 Requirements:
@@ -21,9 +34,14 @@ cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
 
+Build from the source tree before running either policy. The `build/` directories already present
+on a developer machine are local, ignored artifacts and are not part of the repository.
+
 ## Contest Interface
 
-Run from the project directory, where `arch/` contains the five architecture JSON files:
+Run from the project directory, where `arch/` contains the five architecture JSON files.
+
+The conservative baseline uses the official no-flag interface:
 
 ```bash
 build/estimate -in delay_estimate_request.csv -out delay_estimate_result.csv
@@ -45,16 +63,15 @@ cmake --install build --prefix submission
 The request is read and the result is written line by line. The program does not load the full
 query set into memory. Input and output paths must differ.
 
-The strongest accuracy-first candidate now uses architecture-driven weighted local routing for
-Manhattan distance `0--32`:
+To run the current strongest accuracy candidate, add `--short-route`:
 
 ```bash
-build-local/estimate -in request.csv -out result.csv --short-route
+build/estimate -in request.csv -out result.csv --short-route
 ```
 
 It scores `96.8621` on distance `0--16` and `97.0510` on `17--32` in the locked final block, while
 the complete final score improves from `94.2958` to `95.0229`. Five local one-million-row runs
-average `16.16 s` and are byte-identical. Queries above 32 keep the original production prediction.
+average `16.16 s` and are byte-identical. Queries above 32 keep the original estimator prediction.
 
 The earlier bounded learned residual remains available as `--short-residual`, with optional Pareto
 thresholds selected by `--short-residual-threshold 32|64|96|128`. The no-flag production output is
@@ -167,6 +184,9 @@ src/generated_model.hpp     Generated self-contained tree arrays
 tests/                      Architecture, exact router, model, and CLI tests
 refine-logs/                Tracked experiment summaries; raw generated artifacts stay local
 ```
+
+The current mode comparison, reproducibility notes, and repository boundaries are summarized in
+`docs/REPOSITORY_STATUS.md`.
 
 Build directories, local toolchains, virtual environments, historical candidate models, and raw
 experiment outputs are intentionally excluded by `.gitignore`. They are not required to build or

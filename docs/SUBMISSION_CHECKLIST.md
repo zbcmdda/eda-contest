@@ -4,16 +4,16 @@ This checklist records only requirements confirmed by the official problem PDF a
 local preflight checks. It deliberately does not invent an archive layout that the organizer has
 not specified.
 
-## Locked production choice
+## Current algorithm policy
 
-- Use the 128-tree production model with no experimental CLI flags.
-- Use the historical GCC 13.3 Release binary at `build/estimate` for the submission candidate.
-- Do not substitute `build-local/estimate`: it is the Zig/Clang development build and has not been
-  used for the recorded production performance measurements.
-- The no-flag 128-tree model remains the total-score submission default. A separately qualified
-  accuracy-first `--short-route` candidate is now strongest (`95.0229` strict final, `16.16 s/1M`
-  local mean). It must not become the final policy until a same-machine, full-input weighted-score
-  comparison selects it. The earlier `--short-residual[-threshold N]` Pareto remains available.
+- The strongest qualified accuracy candidate is `--short-route` (`95.0229` on the locked public
+  final block, `16.16 s/1M` local mean).
+- The no-flag 128-tree model remains the conservative baseline (`94.2958` on the same block) and
+  is kept unchanged until a same-machine, full-input weighted-score comparison selects the final
+  submission policy.
+- Build the executable from the tracked source before comparing policies. Existing `build/` and
+  `build-local/` directories are ignored local artifacts, not repository contents.
+- The earlier `--short-residual[-threshold N]` Pareto candidate remains available for comparison.
 
 ## Confirmed organizer requirements
 
